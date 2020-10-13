@@ -1,0 +1,117 @@
+-- :name delete-print-document :! :n
+DELETE FROM PRINT_DOCUMENT
+WHERE ID = :id
+  AND DOCUMENT_TYPE = :document-type
+
+-- :name insert-print-document :! :n
+INSERT INTO PRINT_DOCUMENT (
+    ID, DOCUMENT_TYPE, CASE_ID, CLIENT_ID, DOCUMENT_XML,
+    PROCESS_STATUS, PROCESS_STATUS_DATETIME, RETRY_COUNT)
+VALUES (
+    :id, :document-type, :case-id, :client-id, :document-xml,
+    'REQUEST', SYSDATE, 0)
+
+-- :name get-print-document-to-request :? :*
+SELECT DOCUMENT_TYPE,
+       CASE_ID,
+       CLIENT_ID,
+       ID
+FROM PRINT_DOCUMENT
+WHERE PROCESS_STATUS = 'REQUEST'
+  AND RETRY_COUNT < :retry-max
+
+-- :name get-print-document-waiting-print :? :*
+SELECT CASE_ID,
+       ID,
+       DOCUMENT_TYPE
+FROM PRINT_DOCUMENT
+WHERE PRINT_STATUS = 'WAITING'
+
+-- :name update-print-document-requested :! :n
+UPDATE PRINT_DOCUMENT
+SET PROCESS_STATUS = 'REQUESTED',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PRINT_STATUS = 'WAITING',
+    PRINT_STATUS_DATETIME = SYSDATE
+WHERE ID = :id
+  AND DOCUMENT_TYPE = :doc-type
+
+-- :name update-print-document-printed :! :n
+UPDATE PRINT_DOCUMENT
+SET PROCESS_STATUS = 'COMPLETE',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PRINT_STATUS = 'PRINTED',
+    PRINT_STATUS_DATETIME = SYSDATE
+WHERE ID = :id
+  AND DOCUMENT_TYPE = :doc-type
+
+-- :name update-print-document-retry :! :n
+UPDATE PRINT_DOCUMENT
+SET PROCESS_STATUS = 'REQUEST',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PRINT_STATUS = NULL,
+    PRINT_STATUS_DATETIME = SYSDATE,
+    RETRY_COUNT = RETRY_COUNT + 1
+WHERE ID = :id
+  AND DOCUMENT_TYPE = :doc-type
+
+-- :name insert-contdet-document :! :n
+INSERT INTO CONTACT_DET_DOCUMENT (
+    CONTACT_DET_ID, CASE_ID, CLIENT_ID, CONTACT_DETERMINATION,
+    APPROVED_DATETIME, APPROVED_BY,
+    ISSUE_DATE, DOCUMENT_XML,
+    PROCESS_STATUS, PROCESS_STATUS_DATETIME, RETRY_COUNT)
+VALUES (
+    CONTACT_DET_ID_SEQ.NEXTVAL, :case-id, :client-id, :contact-determination,
+    TO_DATE(:approved-datetime, 'DD/MM/YYYY HH:MI AM'), :approved-by,
+    TO_DATE(:issue-date, 'YYYY-MM-DD'), :document-xml,
+    'REQUEST', SYSDATE, 0)
+
+-- :name get-contdet-document-to-request :? :*
+SELECT CONTACT_DETERMINATION,
+       CASE_ID,
+       CLIENT_ID,
+       CONTACT_DET_ID
+FROM CONTACT_DET_DOCUMENT
+WHERE PROCESS_STATUS = 'REQUEST'
+  AND RETRY_COUNT < :retry-max
+
+-- :name get-contdet-document-waiting-print :? :*
+SELECT CASE_ID,
+       CONTACT_DET_ID,
+       CONTACT_DETERMINATION
+FROM CONTACT_DET_DOCUMENT
+WHERE PRINT_STATUS = 'WAITING'
+
+-- :name update-contdet-document-requested :! :n
+UPDATE CONTACT_DET_DOCUMENT
+SET PROCESS_STATUS = 'REQUESTED',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PRINT_STATUS = 'WAITING',
+    PRINT_STATUS_DATETIME = SYSDATE
+WHERE CONTACT_DET_ID = :id
+
+-- :name update-contdet-document-printed :! :n
+UPDATE CONTACT_DET_DOCUMENT
+SET PROCESS_STATUS = 'COMPLETE',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PRINT_STATUS = 'PRINTED',
+    PRINT_STATUS_DATETIME = SYSDATE
+WHERE CONTACT_DET_ID = :id
+
+-- :name update-contdet-document-retry :! :n
+UPDATE CONTACT_DET_DOCUMENT
+SET PROCESS_STATUS = 'REQUEST',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PRINT_STATUS = NULL,
+    PRINT_STATUS_DATETIME = SYSDATE,
+    RETRY_COUNT = RETRY_COUNT + 1
+WHERE CONTACT_DET_ID = :id
+
+-- :name get-plan-attach :? :1
+SELECT 1 EXIST
+FROM PSCRIS.PS_C3_PLAN_ATTACH
+WHERE CASE_ID = :case-id
+  AND BUSINESS_UNIT = 'CP001'
+  AND ICC_CASE_PLAN_ID = :id
+  AND ICC_PLN_TYPE_SETID = :plan-type

@@ -1,0 +1,35 @@
+-- :name insert-workflows :! :n
+INSERT INTO WORKFLOWS (
+    WORKFLOW_ID, CASE_ID, CLIENT_ID, RELATIVE_ID, WORKFLOW_TYPE,
+    ACTION, TO_WORKER_ID, FROM_WORKER_ID, RESULT_WORKER_ID,
+    PROCESS_STATUS, PROCESS_STATUS_DATETIME, RETRY_COUNT)
+VALUES (
+    WORKFLOW_ID_SEQ.NEXTVAL, :case-id, :client-id, :relative-id, :workflow-type,
+    :action, :to-worker-id, :from-worker-id, :result-worker-id,
+    'REQUEST', SYSDATE, 0)
+
+-- :name get-workflows-to-request :? :*
+SELECT WORKFLOW_TYPE TYPE,
+       ACTION,
+       CASE WHEN ACTION IN ('FREV','FEND','FAPP') THEN TO_WORKER_ID ELSE NULL END "TO",
+       CASE WHEN ACTION IN ('FREV','FEND','FAPP') THEN FROM_WORKER_ID ELSE RESULT_WORKER_ID END "FROM",
+       CLIENT_ID,
+       RELATIVE_ID,
+       CASE_ID,
+       WORKFLOW_ID
+FROM WORKFLOWS
+WHERE PROCESS_STATUS = 'REQUEST'
+  AND RETRY_COUNT < :retry-max
+
+-- :name update-workflows-requested :! :n
+UPDATE WORKFLOWS
+SET PROCESS_STATUS = 'REQUESTED',
+    PROCESS_STATUS_DATETIME = SYSDATE
+WHERE WORKFLOW_ID = :id
+
+-- :name update-workflows-retry :! :n
+UPDATE WORKFLOWS
+SET PROCESS_STATUS = 'REQUEST',
+    PROCESS_STATUS_DATETIME = SYSDDATE,
+    RETRY_COUNT = RETRY_COUNT + 1
+WHERE WORKFLOW_ID = :id
