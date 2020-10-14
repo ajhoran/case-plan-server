@@ -108,11 +108,11 @@
            :handler get-plan}}]
 
    ["/new"
-    {:post {:parameters {:query {:userid string?
-                                 :caseid pos-int?
-                                 :clientid string?
-                                 :id int?
-                                 :token string?}}
+    {:get {:parameters {:query {:userid string?
+                                :caseid pos-int?
+                                :clientid string?
+                                :id int?
+                                :token string?}}
             :handler create-plan}}]
 
    ["/save"

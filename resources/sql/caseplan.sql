@@ -257,7 +257,7 @@ WHERE PLAN_ID = :plan-id
 -- :name get-contact-determination :? :*
 SELECT ORD,
        CLIENT_ID,
-       DISPLAY_NAME
+       DISPLAY_NAME,
        CONTACT_DETERMINATION,
        ADDR_STREET,
        ADDR_CITY,
@@ -344,7 +344,8 @@ WHERE PLAN_ID = :plan-id
 -- :name get-education :? :1
 SELECT INDIVIDUAL_PLAN,
        INDIVIDUAL_PLAN_DATE,
-       NEGOTIATED_PLAN
+       NEGOTIATED_PLAN,
+       ASSESSMENT_SUMMARY
 FROM EDUCATION
 WHERE PLAN_ID = :plan-id
 
