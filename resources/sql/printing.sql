@@ -6,10 +6,12 @@ WHERE ID = :id
 -- :name insert-print-document :! :n
 INSERT INTO PRINT_DOCUMENT (
     ID, DOCUMENT_TYPE, CASE_ID, CLIENT_ID, DOCUMENT_XML,
-    PROCESS_STATUS, PROCESS_STATUS_DATETIME, RETRY_COUNT)
+    PROCESS_STATUS, PROCESS_STATUS_DATETIME, PROCESS_RETRY_COUNT,
+    PRINT_STATUS, PRINT_STATUS_DATETIME, PRINT_RETRY_COUNT)
 VALUES (
     :id, :document-type, :case-id, :client-id, :document-xml,
-    'REQUEST', SYSDATE, 0)
+    'REQUEST', SYSDATE, 0,
+    NULL, NULL, 0)
 
 -- :name get-print-document-to-request :? :*
 SELECT DOCUMENT_TYPE,
@@ -18,14 +20,8 @@ SELECT DOCUMENT_TYPE,
        ID
 FROM PRINT_DOCUMENT
 WHERE PROCESS_STATUS = 'REQUEST'
-  AND RETRY_COUNT < :retry-max
-
--- :name get-print-document-waiting-print :? :*
-SELECT CASE_ID,
-       ID,
-       DOCUMENT_TYPE
-FROM PRINT_DOCUMENT
-WHERE PRINT_STATUS = 'WAITING'
+  AND PROCESS_RETRY_COUNT < :process-retry-max
+  AND PRINT_RETRY_COUNT < :print-retry-max
 
 -- :name update-print-document-requested :! :n
 UPDATE PRINT_DOCUMENT
@@ -36,6 +32,23 @@ SET PROCESS_STATUS = 'REQUESTED',
 WHERE ID = :id
   AND DOCUMENT_TYPE = :doc-type
 
+-- :name update-print-document-retry-request :! :n
+UPDATE PRINT_DOCUMENT
+SET PROCESS_STATUS = 'REQUEST',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PROCESS_RETRY_COUNT = PROCESS_RETRY_COUNT + 1
+WHERE ID = :id
+  AND DOCUMENT_TYPE = :doc-type
+
+-- :name get-print-document-waiting-print :? :*
+SELECT CASE_ID,
+       ID,
+       DOCUMENT_TYPE
+FROM PRINT_DOCUMENT
+WHERE PRINT_STATUS = 'WAITING'
+  AND PRINT_STATUS_DATETIME < SYSDATE - :print-wait / 60 / 24
+  AND PRINT_RETRY_COUNT < :print-retry-max
+
 -- :name update-print-document-printed :! :n
 UPDATE PRINT_DOCUMENT
 SET PROCESS_STATUS = 'COMPLETE',
@@ -45,13 +58,14 @@ SET PROCESS_STATUS = 'COMPLETE',
 WHERE ID = :id
   AND DOCUMENT_TYPE = :doc-type
 
--- :name update-print-document-retry :! :n
+-- :name update-print-document-retry-print :! :n
 UPDATE PRINT_DOCUMENT
 SET PROCESS_STATUS = 'REQUEST',
     PROCESS_STATUS_DATETIME = SYSDATE,
+    PROCESS_RETRY_COUNT = 0,
     PRINT_STATUS = NULL,
     PRINT_STATUS_DATETIME = SYSDATE,
-    RETRY_COUNT = RETRY_COUNT + 1
+    PRINT_RETRY_COUNT = PRINT_RETRY_COUNT + 1
 WHERE ID = :id
   AND DOCUMENT_TYPE = :doc-type
 
@@ -60,12 +74,14 @@ INSERT INTO CONTACT_DET_DOCUMENT (
     CONTACT_DET_ID, CASE_ID, CLIENT_ID, CONTACT_DETERMINATION,
     APPROVED_DATETIME, APPROVED_BY,
     ISSUE_DATE, DOCUMENT_XML,
-    PROCESS_STATUS, PROCESS_STATUS_DATETIME, RETRY_COUNT)
+    PROCESS_STATUS, PROCESS_STATUS_DATETIME, PROCESS_RETRY_COUNT,
+    PRINT_STATUS, PRINT_STATUS_DATETIME, PRINT_RETRY_COUNT)
 VALUES (
     CONTACT_DET_ID_SEQ.NEXTVAL, :case-id, :client-id, :contact-determination,
     TO_DATE(:approved-datetime, 'DD/MM/YYYY HH:MI AM'), :approved-by,
     TO_DATE(:issue-date, 'YYYY-MM-DD'), :document-xml,
-    'REQUEST', SYSDATE, 0)
+    'REQUEST', SYSDATE, 0,
+    NULL, NULL, 0)
 
 -- :name get-contdet-document-to-request :? :*
 SELECT CONTACT_DETERMINATION,
@@ -74,14 +90,8 @@ SELECT CONTACT_DETERMINATION,
        CONTACT_DET_ID
 FROM CONTACT_DET_DOCUMENT
 WHERE PROCESS_STATUS = 'REQUEST'
-  AND RETRY_COUNT < :retry-max
-
--- :name get-contdet-document-waiting-print :? :*
-SELECT CASE_ID,
-       CONTACT_DET_ID,
-       CONTACT_DETERMINATION
-FROM CONTACT_DET_DOCUMENT
-WHERE PRINT_STATUS = 'WAITING'
+  AND PROCESS_RETRY_COUNT < :process-retry-max
+  AND PRINT_RETRY_COUNT < :print-retry-max
 
 -- :name update-contdet-document-requested :! :n
 UPDATE CONTACT_DET_DOCUMENT
@@ -91,6 +101,22 @@ SET PROCESS_STATUS = 'REQUESTED',
     PRINT_STATUS_DATETIME = SYSDATE
 WHERE CONTACT_DET_ID = :id
 
+-- :name update-contdet-document-retry-request :! :n
+UPDATE CONTACT_DET_DOCUMENT
+SET PROCESS_STATUS = 'REQUEST',
+    PROCESS_STATUS_DATETIME = SYSDATE,
+    PROCESS_RETRY_COUNT = PROCESS_RETRY_COUNT + 1
+WHERE CONTACT_DET_ID = :id
+
+-- :name get-contdet-document-waiting-print :? :*
+SELECT CASE_ID,
+       CONTACT_DET_ID,
+       CONTACT_DETERMINATION
+FROM CONTACT_DET_DOCUMENT
+WHERE PRINT_STATUS = 'WAITING'
+  AND PRINT_STATUS_DATETIME < SYSDATE - :print-wait / 60 / 24
+  AND PRINT_RETRY_COUNT < :print-retry-max
+
 -- :name update-contdet-document-printed :! :n
 UPDATE CONTACT_DET_DOCUMENT
 SET PROCESS_STATUS = 'COMPLETE',
@@ -99,13 +125,14 @@ SET PROCESS_STATUS = 'COMPLETE',
     PRINT_STATUS_DATETIME = SYSDATE
 WHERE CONTACT_DET_ID = :id
 
--- :name update-contdet-document-retry :! :n
+-- :name update-contdet-document-retry-print :! :n
 UPDATE CONTACT_DET_DOCUMENT
 SET PROCESS_STATUS = 'REQUEST',
     PROCESS_STATUS_DATETIME = SYSDATE,
+    PROCESS_RETRY_COUNT = 0,
     PRINT_STATUS = NULL,
     PRINT_STATUS_DATETIME = SYSDATE,
-    RETRY_COUNT = RETRY_COUNT + 1
+    PRINT_RETRY_COUNT = PRINT_RETRY_COUNT + 1
 WHERE CONTACT_DET_ID = :id
 
 -- :name get-plan-attach :? :1
