@@ -62,10 +62,9 @@
     (do
       (log/error "Database configuration not found, :database-url environment variable must be set before running")
       (System/exit 1))
-    (or (nil? (:c3integration-url env))
-        (nil? (:c3integration-retry env)))
+    (nil? (:c3integration-url env))
     (do
-      (log/error "C3MS Integration configuration not found, :c3integration-url and c3integration-retry must be set")
+      (log/error "C3MS Integration configuration not found, :c3integration-url must be set")
       (System/exit 1))
     (or (nil? (:print-request-job-cron env))
         (nil? (:print-check-job-cron env))
