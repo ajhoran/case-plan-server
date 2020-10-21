@@ -16,12 +16,12 @@
                 (io/input-stream))})
 
 (defn serve-spa-html
-  [{{{:keys [userid caseid clientid id token]} :query} :parameters :as request}]
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
   (let [app (uri->app (:uri request))]
-    (log/info "get" app "html" userid caseid clientid id token)
-    (if-not (c3-authenticated? userid caseid clientid app id token)
+    (log/info "get" app "html" userid caseid clientid id viewOnly token)
+    (if-not (c3-authenticated? userid caseid clientid app id viewOnly token)
       (do
-        (log/info "unauthorised!" userid caseid clientid id token)
+        (log/info "unauthorised!" userid caseid clientid id viewOnly token)
         (serve-unauth))
       {:status  200
        :headers {"Content-Type" "text/html"}

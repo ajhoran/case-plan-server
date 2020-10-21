@@ -76,13 +76,14 @@ WHERE TOKEN = :token
   AND USER_ID = :user-id
   AND TARGET = :target
   AND TARGET_ID = :target-id
+  AND READONLY = :readonly
   AND INSERTED_DATETIME > SYSDATE - 10/24
 
 -- :name insert-session-security :! :n
 INSERT INTO SESSION_SECURITY (
-    TOKEN, CASE_ID, CLIENT_ID, USER_ID, TARGET, TARGET_ID, INSERTED_DATETIME)
+    TOKEN, CASE_ID, CLIENT_ID, USER_ID, TARGET, TARGET_ID, READONLY, INSERTED_DATETIME)
 VALUES (
-    :token, :case-id, :client-id, :user-id, :target, :target-id, SYSDATE)
+    :token, :case-id, :client-id, :user-id, :target, :target-id, :readonly, SYSDATE)
 
 -- :name update-session-id :! :n
 UPDATE SESSION_SECURITY
