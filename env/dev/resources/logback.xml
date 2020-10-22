@@ -34,8 +34,9 @@
     <logger name="case-plan-server.routes.caseplan" level="debug" />
     <logger name="case-plan-server.routes.common" level="debug" />
     <logger name="case-plan-server.routes.review" level="debug" />
-    <logger name="case-plan-server.scheduler.print" level="debug" />
-    <logger name="case-plan-server.scheduler.workflow" level="debug" />
+    <logger name="case-plan-server.scheduler.print" level="info" />
+    <logger name="case-plan-server.scheduler.session" level="debug" />
+    <logger name="case-plan-server.scheduler.workflow" level="info" />
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />

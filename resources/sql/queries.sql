@@ -77,13 +77,17 @@ WHERE TOKEN = :token
   AND TARGET = :target
   AND TARGET_ID = :target-id
   AND READONLY = :readonly
-  AND INSERTED_DATETIME > SYSDATE - 10/24
+  AND INSERTED_DATETIME > SYSDATE - (:timeout / 24)
 
 -- :name insert-session-security :! :n
 INSERT INTO SESSION_SECURITY (
     TOKEN, CASE_ID, CLIENT_ID, USER_ID, TARGET, TARGET_ID, READONLY, INSERTED_DATETIME)
 VALUES (
     :token, :case-id, :client-id, :user-id, :target, :target-id, :readonly, SYSDATE)
+
+-- :name delete-session-security-aged :! :n
+DELETE FROM SESSION_SECURITY
+WHERE INSERTED_DATETIME < SYSDATE - (:timeout / 24)
 
 -- :name update-session-id :! :n
 UPDATE SESSION_SECURITY

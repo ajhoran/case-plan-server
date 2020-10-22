@@ -1,5 +1,6 @@
 (ns case-plan-server.backend.auth
   (:require
+    [case-plan-server.config :refer [env]]
     [case-plan-server.db.core :as db])
   (:import
     [java.time LocalDateTime]))
@@ -14,7 +15,8 @@
                                             :user-id user-id
                                             :target app
                                             :target-id id
-                                            :readonly readonly}))))
+                                            :readonly readonly
+                                            :timeout (get env :session-timeout-hrs 6)}))))
 
 (defn save-session
   [user-id case-id client-id app id readonly token]
