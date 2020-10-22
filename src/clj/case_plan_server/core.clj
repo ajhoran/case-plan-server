@@ -68,9 +68,10 @@
       (System/exit 1))
     (or (nil? (:print-request-job-cron env))
         (nil? (:print-check-job-cron env))
-        (nil? (:workflow-job-cron env)))
+        (nil? (:workflow-job-cron env))
+        (nil? (:session-job-cron env)))
     (do
-      (log/error "Job Schedule configuration not found, :print-request-job-cron, :print-check-job-cron and :workflow-job-cron must be set")
+      (log/error "Job Schedule configuration not found, :print-request, :print-check, :workflow and :session -job-cron must be set")
       (System/exit 1))
     :else
     (start-app args)))

@@ -14,11 +14,11 @@
     [ring.util.http-response :refer :all]))
 
 (defn create-plan
-  [{{{:keys [userid caseid clientid id token]} :query} :parameters}]
-  (log/info "create caseplan" userid caseid clientid id token)
-  (if-not (auth/authenticated? userid caseid clientid "caseplan" id token)
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters}]
+  (log/info "create caseplan" userid caseid clientid id viewOnly token)
+  (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
-      (log/info "unauthorised! create caseplan" userid caseid clientid id token)
+      (log/info "unauthorised! create caseplan" userid caseid clientid id viewOnly token)
       (serve-unauth))
     (let [plan (caseplan/create clientid caseid userid)]
       (auth/update-session (get-in plan [:header :plan-id]) token)
@@ -28,11 +28,11 @@
           ok))))
 
 (defn get-plan
-  [{{{:keys [userid caseid clientid id token]} :query} :parameters}]
-  (log/info "get caseplan" userid caseid clientid id token)
-  (if-not (auth/authenticated? userid caseid clientid "caseplan" id token)
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters}]
+  (log/info "get caseplan" userid caseid clientid id viewOnly token)
+  (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
-      (log/info "unauthorised! get caseplan" userid caseid clientid id token)
+      (log/info "unauthorised! get caseplan" userid caseid clientid id viewOnly token)
       (serve-unauth))
     (let [plan (caseplan/retrieve id clientid userid)]
       (log/debug (:header plan))
@@ -41,11 +41,11 @@
           ok))))
 
 (defn save-plan
-  [{{{:keys [userid caseid clientid id token]} :query} :parameters :as request}]
-  (log/info "save caseplan" userid caseid clientid id token)
-  (if-not (auth/authenticated? userid caseid clientid "caseplan" id token)
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
+  (log/info "save caseplan" userid caseid clientid id viewOnly token)
+  (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
-      (log/info "unauthorised! save caseplan" userid caseid clientid id token)
+      (log/info "unauthorised! save caseplan" userid caseid clientid id viewOnly token)
       (serve-unauth))
     (do (-> request
             :body
@@ -58,11 +58,11 @@
               ok)))))
 
 (defn save-contact-determination
-  [{{{:keys [userid caseid clientid id token]} :query} :parameters :as request}]
-  (log/info "save caseplan contact det" userid caseid clientid id token)
-  (if-not (auth/authenticated? userid caseid clientid "caseplan" id token)
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
+  (log/info "save caseplan contact det" userid caseid clientid id viewOnly token)
+  (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
-      (log/info "unauthorised! save caseplan contact det" userid caseid clientid id token)
+      (log/info "unauthorised! save caseplan contact det" userid caseid clientid id viewOnly token)
       (serve-unauth))
     (do (-> request
             :body
@@ -96,6 +96,7 @@
                                 :caseid pos-int?
                                 :clientid string?
                                 :id int?
+                                :viewOnly string?
                                 :token string?}}
            :handler serve-spa-html}}]
 
@@ -104,6 +105,7 @@
                                 :caseid pos-int?
                                 :clientid string?
                                 :id pos-int?
+                                :viewOnly string?
                                 :token string?}}
            :handler get-plan}}]
 
@@ -112,6 +114,7 @@
                                 :caseid pos-int?
                                 :clientid string?
                                 :id int?
+                                :viewOnly string?
                                 :token string?}}
             :handler create-plan}}]
 
@@ -120,6 +123,7 @@
                                  :caseid pos-int?
                                  :clientid string?
                                  :id pos-int?
+                                 :viewOnly string?
                                  :token string?}}
             :handler save-plan}}]
 
@@ -128,6 +132,7 @@
                                  :caseid pos-int?
                                  :clientid string?
                                  :id pos-int?
+                                 :viewOnly string?
                                  :token string?}}
             :handler save-contact-determination}}]
 
