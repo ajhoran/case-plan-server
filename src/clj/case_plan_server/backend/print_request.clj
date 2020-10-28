@@ -18,10 +18,9 @@
   (fn [docs contact-det]
     (if (:document-xml contact-det)
       (conj docs
-            (merge {:case-id case-id
-                    :contact-determination (:contact-type contact-det)}
+            (merge {:case-id case-id}
                    (select-keys contact-det [:client-id :approved-datetime :approved-by
-                                             :issue-date :document-xml])))
+                                             :contact-determination :issue-date :document-xml])))
       docs)))
 
 (defn- contact-det-documents
