@@ -8,11 +8,12 @@
 
 (defn- get-related-plan
   [client-id case-id]
-  (let [{:keys [plan-id client care-team professionals outcomes outcomes-actions atsi-reconnect actions]}
+  (let [{:keys [header care-team professionals outcomes outcomes-actions atsi-reconnect actions] :as plan}
         (db/retrieve-review-related-plan client-id case-id)]
-    (-> {:plan-id plan-id
-         :client client}
-        (assoc :contributors (concat
+    (-> plan
+        (select-keys [:plan-id :client])
+        (assoc :plan-goal (:plan-goal header)
+               :contributors (concat
                                (map (fn [{:keys [client-id display-name relationship]}]
                                       {:ord 0
                                        :client-id client-id
@@ -36,8 +37,9 @@
                   :client-id client-id
                   :case-id case-id
                   :status "NEW"
-                  :plan-id (:plan-id related-plan)}}
-        (merge (dissoc related-plan :plan-id))
+                  :plan-id (:plan-id related-plan)
+                  :plan-goal (:plan-goal related-plan)}}
+        (merge (dissoc related-plan :plan-id :plan-goal))
         (assoc-c3-current-details client-id user-id))))
 
 (defn retrieve

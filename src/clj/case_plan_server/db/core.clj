@@ -85,26 +85,26 @@
   [[:review_report :header]
    [:rev_client :client]
    [:rev_details :review]
-   [:rev_panel_members :panelMembers]
-   [:rev_partic_answers :participationAnswers]
+   [:rev_panel_members :panel-members]
+   [:rev_partic_answers :participation-answers]
    [:rev_contributors :contributors]
    [:rev_outcomes :outcomes]
-   [:rev_outcomes_actions :outcomesActions]
+   [:rev_outcomes_actions :outcomes-actions]
    [:rev_atsi :acist]
-   [:rev_atsi_reconnect :atsiReconnect]
+   [:rev_atsi_reconnect :atsi-reconnect]
    [:rev_cald :cald]
-   [:rev_contact_arrangements :contactArrangements]
-   [:rev_rep_physical_health :physicalHealth]
+   [:rev_contact_arrangements :contact-arrangements]
+   [:rev_rep_physical_health :physical-health]
    [:rev_rep_disability_devdelay :disability]
    [:rev_rep_emotional :emotional]
    [:rev_rep_education :education]
    [:rev_rep_recreation :recreation]
-   [:rev_rep_independent_living :independentLiving]
+   [:rev_rep_independent_living :independent-living]
    [:rev_rep_finances :finances]
    [:rev_rep_conclusions :conclusions]
-   [:rev_endorsement_approval :endorsementApproval]
-   [:rev_actions_case_plan :actionsCasePlan]
-   [:rev_actions_panel :actionsPanel]])
+   [:rev_endorsement_approval :endorsement-approval]
+   [:rev_actions_case_plan :actions-case-plan]
+   [:rev_actions_panel :actions-panel]])
 
 (defn- clob->string
   "Given a CLOB column value, read it as a string."
@@ -205,6 +205,47 @@
         :endorsement-approval (s :endorsement_approval get-endorsement-approval-sqlvec)
         :actions (s :actions get-actions-sqlvec)))))
 
+(defn retrieve-plan-previous-plan
+  [client-id case-id]
+  (conman/with-transaction
+    [*db* {:isolation :read-committed}]
+    (let [previous-plan-id (:plan_id (get-recent-approved-plan-id {:client-id client-id :case-id case-id}))
+          s (partial select *db* {:plan-id previous-plan-id})
+          s1 (partial select-one *db* {:plan-id previous-plan-id})]
+      (assoc {:plan-id previous-plan-id}
+        :header (s1 :case_plan get-case-plan-sqlvec)
+        :about-me (s1 :about_me get-about-me-sqlvec)
+        :general (s1 :case_plan_general get-case-plan-general-sqlvec)
+        :care-team (s :care_team_family get-care-team-family-sqlvec)
+        :professionals (s :care_team_professionals get-care-team-professionals-sqlvec)
+        :culture-identity (s1 :culture_identity get-culture-identity-sqlvec)
+        :atsi (s1 :atsi get-atsi-sqlvec)
+        :atsi-orgs (s :atsi_orgs get-atsi-orgs-sqlvec)
+        :cald (s1 :cald get-cald-sqlvec)
+        :cald-orgs (s :cald_orgs get-cald-orgs-sqlvec)
+        :contact-determinations (s :contact_determination get-contact-determination-sqlvec)
+        :physical-health (s1 :physical_health get-physical-health-sqlvec)
+        :disability (s1 :disability_devdelay get-disability-devdelay-sqlvec)
+        :disabilities (s :disabilities get-disabilities-sqlvec)
+        :emotional (s1 :emotional get-emotional-sqlvec)
+        :education (s1 :education get-education-sqlvec)
+        :independent-living (s1 :independent_living get-independent-living-sqlvec)
+        :finances (s1 :finances get-finances-sqlvec)))))
+
+(defn retrieve-plan-related-review
+  [plan-id]
+  (conman/with-transaction
+    [*db* {:isolation :read-committed}]
+    (let [related-review-id (:review_id (get-plan-approved-review-id {:plan-id plan-id}))
+          s (partial select *db* {:review-id related-review-id})
+          s1 (partial select-one *db* {:review-id related-review-id})]
+      (assoc {:review-id related-review-id}
+        :client (s1 :rev_client get-rev-client-sqlvec)
+        :outcomes (s :rev_outcomes get-rev-outcomes-sqlvec)
+        :outcomes-actions (s :rev_outcomes_actions get-rev-outcomes-actions-sqlvec)
+        :actions-panel (s :rev_actions_panel get-rev-actions-panel-sqlvec)
+        :actions-case-plan (s :rev_actions_case_plan get-rev-actions-case-plan-sqlvec)))))
+
 (defn retrieve-contact-determination
   [plan-id]
   (conman/with-transaction
@@ -251,10 +292,11 @@
   [client-id case-id]
   (conman/with-transaction
     [*db* {:isolation :read-committed}]
-    (let [related-plan-id (:plan_id (get-review-related-plan-id {:client-id client-id :case-id case-id}))
+    (let [related-plan-id (:plan_id (get-recent-approved-plan-id {:client-id client-id :case-id case-id}))
           s (partial select *db* {:plan-id related-plan-id})
           s1 (partial select-one *db* {:plan-id related-plan-id})]
       (assoc {:plan-id related-plan-id}
+        :header (s1 :case_plan get-case-plan-sqlvec)
         :client (s1 :case_plan_client get-case-plan-client-sqlvec)
         :care-team (s :care_team_family get-care-team-family-sqlvec)
         :professionals (s :care_team_professionals get-care-team-professionals-sqlvec)

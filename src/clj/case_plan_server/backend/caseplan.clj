@@ -7,6 +7,8 @@
     [case-plan-server.db.core :as db]
     [jsonista.core :as json]))
 
+(def incomplete-action-statuses #{"PROG" "NTCM"})
+
 (defn assoc-c3-current-details
   [plan-or-review client-id user-id]
   (-> plan-or-review
@@ -23,13 +25,59 @@
   []
   (db/get-offices))
 
+(defn- get-previous-plan
+  [client-id case-id]
+  (let [{:keys [header culture-identity atsi cald physical-health disability emotional education independent-living finances] :as plan}
+        (db/retrieve-plan-previous-plan client-id case-id)]
+    (-> plan
+        (select-keys [:plan-id :general :about-me :care-team :professionals :atsi-orgs :cald-orgs :contact-determinations :disabilities])
+        (assoc :plan-goal (:plan-goal header)
+               :culture-identity (dissoc culture-identity :assessment-summary)
+               :atsi (dissoc atsi :assessment-summary)
+               :cald (dissoc cald :assessment-summary)
+               :physical-health (dissoc physical-health :assessment-summary)
+               :disability (dissoc disability :assessment-summary)
+               :emotional (dissoc emotional :assessment-summary)
+               :education (dissoc education :assessment-summary)
+               :independent-living (dissoc independent-living :assessment-summary)
+               :finances (dissoc finances :assessment-summary)))))
+
+(defn- get-related-review
+  [plan-id]
+  (let [{:keys [outcomes outcomes-actions actions-panel actions-case-plan] :as review}
+        (db/retrieve-plan-related-review plan-id)
+        incomplete-outcomes-actions (->> outcomes-actions
+                                         (filter #(contains? incomplete-action-statuses (:status %)))
+                                         (map #(dissoc % :status)))
+        incomplete-outcomes-ords (->> incomplete-outcomes-actions
+                                      (map :outcome-ord)
+                                      (set))
+        incomplete-outcomes (->> outcomes
+                                 (filter #(contains? incomplete-outcomes-ords (:ord %)))
+                                 (map #(dissoc % :progress-summary)))
+        incomplete-actions-case-plan (->> actions-case-plan
+                                          (filter #(contains? incomplete-action-statuses (:status %)))
+                                          (map #(dissoc % :status)))]
+    (-> review
+        (select-keys [:review-id :client])
+        (assoc :outcomes incomplete-outcomes
+               :outcomes-actions incomplete-outcomes-actions
+               :actions (concat actions-panel incomplete-actions-case-plan)))))
+
 (defn create
   [client-id case-id user-id]
-  (let [next-plan-id (:nextval (db/get-next-plan-id))]
+  (let [next-plan-id (:nextval (db/get-next-plan-id))
+        previous-plan (get-previous-plan client-id case-id)
+        related-review (get-related-review (:plan-id previous-plan))]
     (-> {:header {:plan-id next-plan-id
                   :client-id client-id
                   :case-id case-id
-                  :status "NEW"}}
+                  :status "NEW"
+                  :plan-goal (:plan-goal previous-plan)}}
+        (merge (when (:plan-id previous-plan)
+                 (dissoc previous-plan :plan-id :plan-goal))
+               (when (:review-id related-review)
+                 (dissoc related-review :review-id)))
         (assoc-c3-current-details client-id user-id))))
 
 (defn retrieve
