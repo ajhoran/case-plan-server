@@ -3,6 +3,8 @@
     [case-plan-server.backend.auto-update :as auto]
     [case-plan-server.backend.caseplan :refer [assoc-c3-current-details]]
     [case-plan-server.backend.core :refer [->kebab-case]]
+    [case-plan-server.backend.print-request :as print-request]
+    [case-plan-server.backend.workflow-request :as workflow-request]
     [case-plan-server.db.core :as db]
     [jsonista.core :as json]))
 
@@ -55,4 +57,6 @@
         user-name (:worker_name (db/get-c3worker {:worker-id user-id}))]
     (-> review
         (auto/update-fields user-id user-name)
+        print-request/pull-up
+        workflow-request/pull-up
         (db/save-review audit))))

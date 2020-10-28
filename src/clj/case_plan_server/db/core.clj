@@ -341,6 +341,11 @@
     [*db*]
     (delete *db* review-table-key {:review-id review-id})
     (insert *db* review-table-key {:review-id review-id} review)
+    (when (:print-document review)
+      (delete-print-document (:print-document review))
+      (insert-print-document (:print-document review)))
+    (doseq [wf (not-empty (:workflows review))]
+      (insert-workflows wf))
     (insert-audit-log audit)))
 
 (defn delete-c3-auth-record
