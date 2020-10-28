@@ -1,4 +1,6 @@
 (ns case-plan-server.db.dates
+  (:require
+    [clojure.string :refer [blank?]])
   (:import
     [java.time LocalDate LocalDateTime]
     [java.time.format DateTimeFormatter]))
@@ -16,14 +18,12 @@
 
 (defn parse-date
   [date-string]
-  (when-not (or (nil? date-string)
-                (= "" date-string))
+  (when-not (blank? date-string)
     (LocalDate/parse date-string date-formatter)))
 
 (defn parse-datetime
   [datetime-string]
-  (when-not (or (nil? datetime-string)
-                (= "" datetime-string))
+  (when-not (blank? datetime-string)
     (LocalDateTime/parse datetime-string datetime-formatter)))
 
 ;; format: {table_name {column_name [formatter parser]}}
