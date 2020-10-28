@@ -9,10 +9,13 @@ SELECT REVIEW_ID,
        ACIST,
        APPROVED_DATETIME,
        APPROVED_BY,
+       APPROVED_BY_NAME,
        LAST_MODIFIED_DATETIME,
        LAST_MODIFIED_BY,
+       LAST_MODIFIED_BY_NAME,
        CREATED_DATETIME,
        CREATED_BY,
+       CREATED_BY_NAME,
        REVIEW_DUE_DATE
 FROM REVIEW_REPORT
 WHERE REVIEW_ID = :review-id
@@ -79,7 +82,7 @@ WHERE REVIEW_ID = :review-id
 
 -- :name get-rev-contributors :? :*
 SELECT ORD,
-       C3MS_ID,
+       CLIENT_ID,
        NAME,
        CONTRIBUTOR_ROLE
 FROM REV_CONTRIBUTORS

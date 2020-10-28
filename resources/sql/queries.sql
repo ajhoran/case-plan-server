@@ -6,11 +6,17 @@ FROM DUAL
 SELECT REVIEW_ID_SEQ.NEXTVAL
 FROM DUAL
 
--- :name get-review-related-plan-id :? :1
+-- :name get-recent-approved-plan-id :? :1
 SELECT MAX(PLAN_ID) PLAN_ID
 FROM CASE_PLAN
 WHERE CLIENT_ID = :client-id
   AND CASE_ID = :case-id
+  AND STATUS = 'APPROVED'
+
+-- :name get-plan-approved-review-id :? :1
+SELECT MAX(REVIEW_ID) REVIEW_ID
+FROM REVIEW_REPORT
+WHERE PLAN_ID = :plan-id
   AND STATUS = 'APPROVED'
 
 -- :name get-offices :? :*
