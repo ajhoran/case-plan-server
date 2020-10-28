@@ -53,7 +53,8 @@
 
 (defn- update-contact-determination
   [contact-determination set-datetime set-user set-user-name newly-approved]
-  (let [approved (or newly-approved (= "APPV" (:generate-status contact-determination)))]
+  (let [approved (or newly-approved (and (= "APPV" (:generate-status contact-determination))
+                                         (blank? (:approved-datetime contact-determination))))]
     (as-> contact-determination cd
           (if approved (update cd :approved-datetime set-datetime) cd)
           (if approved (update cd :approved-by set-user) cd)
