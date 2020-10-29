@@ -17,6 +17,10 @@
              :c3relations (db/get-c3relations {:client-id client-id})
              :workerDetails (db/get-c3worker {:worker-id user-id}))))
 
+(defn retrieve-all-plans
+  [case-id]
+  (db/retrieve-all-plans case-id))
+
 (defn retrieve-c3-workers
   []
   (db/get-c3workers))

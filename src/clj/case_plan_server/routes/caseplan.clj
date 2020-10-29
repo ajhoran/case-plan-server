@@ -74,6 +74,13 @@
               ->camelCase
               ok)))))
 
+(defn get-all-plans
+  [{{{:keys [caseid]} :query} :parameters}]
+  (log/info "get all case plans" caseid)
+  (-> (caseplan/retrieve-all-plans caseid)
+      ->camelCase
+      ok))
+
 (defn caseplan-routes []
   ["/caseplan"
    {:coercion spec-coercion/coercion
@@ -135,6 +142,10 @@
                                  :viewOnly string?
                                  :token string?}}
             :handler save-contact-determination}}]
+
+   ["/allcaseplans"
+    {:get {:parameters {:query {:caseid pos-int?}}
+           :handler get-all-plans}}]
 
    ["/workers"
     {:get {:handler get-workers}}]

@@ -205,6 +205,11 @@
         :endorsement-approval (s :endorsement_approval get-endorsement-approval-sqlvec)
         :actions (s :actions get-actions-sqlvec)))))
 
+(defn retrieve-all-plans
+  [case-id]
+  (->> (select *db* {:case-id case-id} :case_plan get-all-plans-sqlvec)
+        (map #(select-keys % [:plan-id :status :approved-datetime]))))
+
 (defn retrieve-plan-previous-plan
   [client-id case-id]
   (conman/with-transaction

@@ -433,3 +433,10 @@ SELECT CATEGORY,
        OUTCOMES
 FROM ACTIONS
 WHERE PLAN_ID = :plan-id
+
+-- :name get-all-plans :? :*
+SELECT PLAN_ID,
+       STATUS,
+       APPROVED_DATETIME
+FROM CASE_PLAN
+WHERE CASE_ID = :case-id
