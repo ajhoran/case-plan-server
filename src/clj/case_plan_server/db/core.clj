@@ -94,6 +94,8 @@
    [:rev_atsi_reconnect :atsi-reconnect]
    [:rev_cald :cald]
    [:rev_contact_arrangements :contact-arrangements]
+   [:rev_rep_placement :placement]
+   [:rev_rep_culture_identity :culture-identity]
    [:rev_rep_physical_health :physical-health]
    [:rev_rep_disability_devdelay :disability]
    [:rev_rep_emotional :emotional]
@@ -281,6 +283,8 @@
         :atsi-reconnect (s :rev_atsi_reconnect get-rev-atsi-reconnect-sqlvec)
         :cald (s1 :rev_cald get-rev-cald-sqlvec)
         :contact-arrangements (s1 :rev_contact_arrangements get-rev-contact-arrangements-sqlvec)
+        :placement (s1 :rev_rep_placement get-rev-rep-placement-sqlvec)
+        :culture_identity (s1 :rev_rep_culture_identity get-rev-rep-culture-identity-sqlvec)
         :physical-health (s1 :rev_rep_physical_health get-rev-rep-physical-health-sqlvec)
         :disability (s1 :rev_rep_disability_devdelay get-rev-rep-disability-devdelay-sqlvec)
         :emotional (s1 :rev_rep_emotional get-rev-rep-emotional-sqlvec)
@@ -305,6 +309,7 @@
         :client (s1 :case_plan_client get-case-plan-client-sqlvec)
         :care-team (s :care_team_family get-care-team-family-sqlvec)
         :professionals (s :care_team_professionals get-care-team-professionals-sqlvec)
+        :disability (s1 :disability_devdelay get-disability-devdelay-sqlvec)
         :outcomes (s :outcomes get-outcomes-sqlvec)
         :outcomes-actions (s :outcomes_actions get-outcomes-actions-sqlvec)
         :atsi-reconnect (s :atsi_reconnect get-atsi-reconnect-sqlvec)

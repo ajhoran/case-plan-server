@@ -10,7 +10,7 @@
 
 (defn- get-related-plan
   [client-id case-id]
-  (let [{:keys [header care-team professionals outcomes outcomes-actions atsi-reconnect actions] :as plan}
+  (let [{:keys [header care-team professionals disability outcomes outcomes-actions atsi-reconnect actions] :as plan}
         (db/retrieve-review-related-plan client-id case-id)]
     (-> plan
         (select-keys [:plan-id :client])
@@ -26,6 +26,7 @@
                                        :client-id nil
                                        :name display-name
                                        :contributor-role person-role}) professionals))
+               :disability (assoc (select-keys disability [:has-disability]) :progress-summary "")
                :outcomes (map #(assoc % :progress-summary "") outcomes)
                :outcomes-actions (map #(assoc % :status "") outcomes-actions)
                :atsi-reconnect (map #(assoc % :status "") atsi-reconnect)
