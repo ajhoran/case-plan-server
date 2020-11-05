@@ -34,7 +34,7 @@
 
 (defn create
   [client-id case-id user-id]
-  (let [next-review-id (:nextval (db/get-next-review-id))
+  (let [next-review-id (:nextval (db/get-next-id))
         related-plan (get-related-plan client-id case-id)]
     (-> {:header {:review-id next-review-id
                   :client-id client-id

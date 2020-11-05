@@ -77,7 +77,7 @@ INSERT INTO CONTACT_DET_DOCUMENT (
     PROCESS_STATUS, PROCESS_STATUS_DATETIME, PROCESS_RETRY_COUNT,
     PRINT_STATUS, PRINT_STATUS_DATETIME, PRINT_RETRY_COUNT)
 VALUES (
-    CONTACT_DET_ID_SEQ.NEXTVAL, :case-id, :client-id, :contact-determination,
+    CASEPLAN_ID_SEQ.NEXTVAL, :case-id, :client-id, :contact-determination,
     TO_DATE(:approved-datetime, 'DD/MM/YYYY HH:MI AM'), :approved-by,
     TO_DATE(:issue-date, 'YYYY-MM-DD'), :document-xml,
     'REQUEST', SYSDATE, 0,

@@ -1,9 +1,5 @@
--- :name get-next-plan-id :? :1
-SELECT PLAN_ID_SEQ.NEXTVAL
-FROM DUAL
-
--- :name get-next-review-id :? :1
-SELECT REVIEW_ID_SEQ.NEXTVAL
+-- :name get-next-id :? :1
+SELECT CASEPLAN_ID_SEQ.NEXTVAL
 FROM DUAL
 
 -- :name get-recent-approved-plan-id :? :1
