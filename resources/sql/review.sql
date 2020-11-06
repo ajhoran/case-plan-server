@@ -76,7 +76,8 @@ WHERE REVIEW_ID = :review-id
 -- :name get-rev-partic-answers :? :*
 SELECT ANSWER_TYPE,
        ORD,
-       ANSWER
+       ANSWER,
+       OTHER
 FROM REV_PARTIC_ANSWERS
 WHERE REVIEW_ID = :review-id
 
