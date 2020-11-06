@@ -14,12 +14,12 @@
     [ring.util.http-response :refer :all]))
 
 (defn create-plan
-  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters}]
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
   (log/info "create caseplan" userid caseid clientid id viewOnly token)
   (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
       (log/info "unauthorised! create caseplan" userid caseid clientid id viewOnly token)
-      (serve-unauth))
+      (serve-unauth request))
     (let [plan (caseplan/create clientid caseid userid)]
       (auth/update-session (get-in plan [:header :plan-id]) token)
       (log/debug (:header plan))
@@ -28,12 +28,12 @@
           ok))))
 
 (defn get-plan
-  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters}]
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
   (log/info "get caseplan" userid caseid clientid id viewOnly token)
   (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
       (log/info "unauthorised! get caseplan" userid caseid clientid id viewOnly token)
-      (serve-unauth))
+      (serve-unauth request))
     (let [plan (caseplan/retrieve id clientid userid)]
       (log/debug (:header plan))
       (-> plan
@@ -46,7 +46,7 @@
   (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
       (log/info "unauthorised! save caseplan" userid caseid clientid id viewOnly token)
-      (serve-unauth))
+      (serve-unauth request))
     (do (-> request
             :body
             slurp
@@ -63,7 +63,7 @@
   (if-not (auth/authenticated? userid caseid clientid "caseplan" id viewOnly token)
     (do
       (log/info "unauthorised! save caseplan contact det" userid caseid clientid id viewOnly token)
-      (serve-unauth))
+      (serve-unauth request))
     (do (-> request
             :body
             slurp

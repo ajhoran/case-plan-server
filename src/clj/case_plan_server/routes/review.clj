@@ -14,12 +14,12 @@
     [ring.util.http-response :refer :all]))
 
 (defn create-review
-  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters}]
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
   (log/info "create review" userid caseid clientid id viewOnly token)
   (if-not (auth/authenticated? userid caseid clientid "review" id viewOnly token)
     (do
       (log/info "unauthorised! create review" userid caseid clientid id viewOnly token)
-      (serve-unauth))
+      (serve-unauth request))
     (let [review (review/create clientid caseid userid)]
       (auth/update-session (get-in review [:header :review-id]) token)
       (log/debug (:header review))
@@ -28,12 +28,12 @@
           ok))))
 
 (defn get-review
-  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters}]
+  [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
   (log/info "get review" userid caseid clientid id viewOnly token)
   (if-not (auth/authenticated? userid caseid clientid "review" id viewOnly token)
     (do
       (log/info "unauthorised! get review" userid caseid clientid id viewOnly token)
-      (serve-unauth))
+      (serve-unauth request))
     (let [review (review/retrieve id clientid userid)]
       (log/debug (:header review))
       (-> review
@@ -46,7 +46,7 @@
   (if-not (auth/authenticated? userid caseid clientid "review" id viewOnly token)
     (do
       (log/info "unauthorised! save review" userid caseid clientid id viewOnly token)
-      (serve-unauth))
+      (serve-unauth request))
     (do (-> request
             :body
             slurp

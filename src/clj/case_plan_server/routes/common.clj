@@ -8,12 +8,13 @@
     [ring.util.http-response :refer :all]))
 
 (defn serve-unauth
-  []
-  {:status  401
-   :headers {"Content-Type" "text/html"}
-   :body    (-> (str "public/unauthorised.html")
-                (io/file)
-                (io/input-stream))})
+  [request]
+  (let [app (uri->app (:uri request))]
+    {:status  401
+     :headers {"Content-Type" "text/html"}
+     :body    (-> (str "public/" app "/unauthorised.html")
+                  (io/file)
+                  (io/input-stream))}))
 
 (defn serve-spa-html
   [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
@@ -22,7 +23,7 @@
     (if-not (c3-authenticated? userid caseid clientid app id viewOnly token)
       (do
         (log/info "unauthorised!" userid caseid clientid id viewOnly token)
-        (serve-unauth))
+        (serve-unauth request))
       {:status  200
        :headers {"Content-Type" "text/html"}
        :body    (-> (str "public/" app "/" app ".html")
