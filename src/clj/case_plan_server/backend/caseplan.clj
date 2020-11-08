@@ -72,12 +72,14 @@
   [client-id case-id user-id]
   (let [next-plan-id (:nextval (db/get-next-id))
         previous-plan (get-previous-plan client-id case-id)
-        related-review (get-related-review (:plan-id previous-plan))]
+        related-review (get-related-review (:plan-id previous-plan))
+        subsequent-case-plan (if (:plan-id previous-plan) "Y" "N")]
     (-> {:header {:plan-id next-plan-id
                   :client-id client-id
                   :case-id case-id
                   :status "NEW"
-                  :plan-goal (:plan-goal previous-plan)}}
+                  :plan-goal (:plan-goal previous-plan)
+                  :subsequent-case-plan subsequent-case-plan}}
         (merge (when (:plan-id previous-plan)
                  (dissoc previous-plan :plan-id :plan-goal))
                (when (:review-id related-review)
