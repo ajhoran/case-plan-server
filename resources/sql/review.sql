@@ -69,15 +69,15 @@ WHERE REVIEW_ID = :review-id
 -- :name get-rev-panel-members :? :*
 SELECT ORD,
        NAME,
-       PANEL_ROLE
+       PANEL_ROLE,
+       OTHER
 FROM REV_PANEL_MEMBERS
 WHERE REVIEW_ID = :review-id
 
 -- :name get-rev-partic-answers :? :*
 SELECT ANSWER_TYPE,
        ORD,
-       ANSWER,
-       OTHER
+       ANSWER
 FROM REV_PARTIC_ANSWERS
 WHERE REVIEW_ID = :review-id
 
@@ -175,8 +175,7 @@ SELECT BEST_INTEREST,
        SUPPORT_NEEDS,
        SUPPORT_NEEDS_NO,
        PANEL_BEST_INTEREST,
-       PANEL_BEST_INTEREST_NO,
-       REVIEW_OUTCOME
+       PANEL_BEST_INTEREST_NO
 FROM REV_REP_CONCLUSIONS
 WHERE REVIEW_ID = :review-id
 
