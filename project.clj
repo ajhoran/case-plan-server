@@ -1,4 +1,4 @@
-(defproject case-plan-server "0.1.5"
+(defproject case-plan-server "0.1.6"
 
   :description "Case Plan web server and API"
 
