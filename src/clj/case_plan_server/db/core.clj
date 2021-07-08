@@ -72,6 +72,7 @@
    [:education :education]
    [:recreation :recreation]
    [:independent_living :independent-living]
+   [:life_skills :life-skills]
    [:finances :finances]
    [:person_views :person-views]
    [:person_involvement :person-involvement]
@@ -201,6 +202,7 @@
         :education (s1 :education get-education-sqlvec)
         :recreation (s1 :recreation get-recreation-sqlvec)
         :independent-living (s1 :independent_living get-independent-living-sqlvec)
+        :life-skills (s1 :life_skills get-life-skills-sqlvec)
         :finances (s1 :finances get-finances-sqlvec)
         :person-views (s1 :person_views get-person-views-sqlvec)
         :person-involvement (s :person_involvement get-person-involvement-sqlvec)

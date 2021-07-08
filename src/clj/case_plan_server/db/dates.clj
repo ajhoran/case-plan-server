@@ -37,7 +37,8 @@
    :outcomes_actions {:planned_when [format-date parse-date]}
    :placement {:consult_date [format-date parse-date]
                :registered_public_date [format-date parse-date]}
-   :culture_identity {:received_lifestory_date [format-date parse-date]
+   :culture_identity {:genogram_date [format-date parse-date]
+                      :received_lifestory_date [format-date parse-date]
                       :updated_lifestory_date [format-date parse-date]}
    :atsi {:genogram_date [format-date parse-date]
           :received_lifestory_date [format-date parse-date]
