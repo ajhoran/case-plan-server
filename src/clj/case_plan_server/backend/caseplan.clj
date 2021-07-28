@@ -21,6 +21,21 @@
   [case-id]
   (db/retrieve-all-plans case-id))
 
+(defn retrieve-all-plans-and-linked-review
+  [case-id plan-id]
+  (let [all-plans (retrieve-all-plans case-id)
+        has-linked-review (db/has-plan-been-reviewed {:plan-id plan-id})]
+    {:all-plans all-plans
+     :plan-has-review (:reviewed has-linked-review)}))
+
+(defn retrieve-audit-history
+  [plan-id]
+  (db/retrieve-audit-history plan-id))
+
+(defn retrieve-audit-details
+  [audit-id]
+  (db/retrieve-audit-details audit-id))
+
 (defn retrieve-c3-workers
   []
   (db/get-c3workers))
@@ -31,20 +46,24 @@
 
 (defn- get-previous-plan
   [client-id case-id]
-  (let [{:keys [header culture-identity atsi cald physical-health disability emotional education independent-living finances] :as plan}
+  (let [{:keys [header placement culture-identity atsi cald contact-arrangements physical-health disability emotional education recreation independent-living life-skills finances] :as plan}
         (db/retrieve-plan-previous-plan client-id case-id)]
     (-> plan
         (select-keys [:plan-id :general :about-me :care-team :professionals :atsi-orgs :cald-orgs :contact-determinations :disabilities])
         (assoc :plan-goal (:plan-goal header)
-               :culture-identity (dissoc culture-identity :assessment-summary)
-               :atsi (dissoc atsi :assessment-summary)
-               :cald (dissoc cald :assessment-summary)
-               :physical-health (dissoc physical-health :assessment-summary)
-               :disability (dissoc disability :assessment-summary)
-               :emotional (dissoc emotional :assessment-summary)
-               :education (dissoc education :assessment-summary)
-               :independent-living (dissoc independent-living :assessment-summary)
-               :finances (dissoc finances :assessment-summary)))))
+               :placement placement
+               :culture-identity culture-identity
+               :atsi atsi
+               :cald cald
+               :contact-arrangements contact-arrangements
+               :physical-health physical-health
+               :disability disability
+               :emotional emotional
+               :education education
+               :recreation recreation
+               :independent-living independent-living
+               :life-skills life-skills
+               :finances finances))))
 
 (defn- get-related-review
   [plan-id]

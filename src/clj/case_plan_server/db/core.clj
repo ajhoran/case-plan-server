@@ -103,6 +103,7 @@
    [:rev_rep_education :education]
    [:rev_rep_recreation :recreation]
    [:rev_rep_independent_living :independent-living]
+   [:rev_rep_life_skills :life-skills]
    [:rev_rep_finances :finances]
    [:rev_rep_conclusions :conclusions]
    [:rev_endorsement_approval :endorsement-approval]
@@ -214,6 +215,15 @@
   (->> (select *db* {:case-id case-id} :case_plan get-all-plans-sqlvec)
         (map #(select-keys % [:plan-id :status :approved-datetime]))))
 
+(defn retrieve-audit-history
+  [plan-id]
+  (->> (select *db* {:plan-id plan-id} :audit_log get-plan-audit-history-sqlvec)
+       (map #(select-keys % [:audit-id :time-stamp :user-id]))))
+
+(defn retrieve-audit-details
+  [audit-id]
+  (select-one *db* {:audit-id audit-id} :audit_log get-audit-details-sqlvec))
+
 (defn retrieve-plan-previous-plan
   [client-id case-id]
   (conman/with-transaction
@@ -228,17 +238,21 @@
         :care-team (s :care_team_family get-care-team-family-sqlvec)
         :professionals (s :care_team_professionals get-care-team-professionals-sqlvec)
         :culture-identity (s1 :culture_identity get-culture-identity-sqlvec)
+        :placement (s1 :placement get-placement-sqlvec)
         :atsi (s1 :atsi get-atsi-sqlvec)
         :atsi-orgs (s :atsi_orgs get-atsi-orgs-sqlvec)
         :cald (s1 :cald get-cald-sqlvec)
         :cald-orgs (s :cald_orgs get-cald-orgs-sqlvec)
+        :contact-arrangements (s1 :contact_arrangements get-contact-arrangements-sqlvec)
         :contact-determinations (s :contact_determination get-contact-determination-sqlvec)
         :physical-health (s1 :physical_health get-physical-health-sqlvec)
         :disability (s1 :disability_devdelay get-disability-devdelay-sqlvec)
         :disabilities (s :disabilities get-disabilities-sqlvec)
         :emotional (s1 :emotional get-emotional-sqlvec)
         :education (s1 :education get-education-sqlvec)
+        :recreation (s1 :recreation get-recreation-sqlvec)
         :independent-living (s1 :independent_living get-independent-living-sqlvec)
+        :life-skills (s1 :life_skills get-life-skills-sqlvec)
         :finances (s1 :finances get-finances-sqlvec)))))
 
 (defn retrieve-plan-related-review
@@ -293,6 +307,7 @@
         :education (s1 :rev_rep_education get-rev-rep-education-sqlvec)
         :recreation (s1 :rev_rep_recreation get-rev-rep-recreation-sqlvec)
         :independent-living (s1 :rev_rep_independent_living get-rev-rep-independent-living-sqlvec)
+        :life-skills (s1 :rev_rep_life_skills get-rev-rep-life-skills-sqlvec)
         :finances (s1 :rev_rep_finances get-rev-rep-finances-sqlvec)
         :conclusions (s1 :rev_rep_conclusions get-rev-rep-conclusions-sqlvec)
         :endorsement-approval (s :rev_endorsement_approval get-rev-endorsement-approval-sqlvec)

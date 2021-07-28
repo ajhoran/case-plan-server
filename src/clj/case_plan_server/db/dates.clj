@@ -69,12 +69,14 @@
                    :last_modified_datetime [format-datetime parse-datetime]
                    :created_datetime [format-datetime parse-datetime]
                    :review_due_date [format-date parse-date]}
-   :rev_details {:charter_received_date [format-date parse-date]}
+   :rev_details {:charter_received_date [format-date parse-date]
+                 :review_date [format-date parse-date]}
    :rev_outcomes_actions {:planned_when [format-date parse-date]}
    :rev_endorsement_approval {:action_datetime [format-datetime parse-datetime]
                               :result_datetime [format-datetime parse-datetime]}
    :rev_actions_case_plan {:planned_when [format-date parse-date]}
-   :rev_actions_panel {:planned_when [format-date parse-date]}})
+   :rev_actions_panel {:planned_when [format-date parse-date]}
+   :audit_log {:time_stamp [format-datetime parse-datetime]}})
 
 (defn format-date-columns
   [record date-columns]

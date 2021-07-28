@@ -101,3 +101,13 @@ INSERT INTO AUDIT_LOG (
     AUDIT_ID, TIME_STAMP, USER_ID, TARGET, TARGET_ID, SAVE_TYPE, JSON)
 VALUES (
     AUDIT_ID_SEQ.NEXTVAL, SYSDATE, :user-id, :target, :target-id, :save-type, :json)
+
+-- :name has-plan-been-reviewed :? :1
+SELECT CASE
+           WHEN EXISTS (SELECT REVIEW_ID
+                        FROM REVIEW_REPORT
+                        WHERE PLAN_ID = :plan-id AND STATUS <> 'CANCELLED')
+               THEN 'Y'
+           ELSE 'N'
+           END AS REVIEWED
+FROM DUAL

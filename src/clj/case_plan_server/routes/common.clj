@@ -41,3 +41,10 @@
   (-> (caseplan/retrieve-offices)
       ->camelCase
       ok))
+
+(defn get-audit-details
+  [{{{:keys [auditid]} :query} :parameters}]
+  (log/info "get audit details" auditid)
+  (-> (caseplan/retrieve-audit-details auditid)
+      ->camelCase
+      ok))

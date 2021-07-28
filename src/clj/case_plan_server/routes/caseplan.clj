@@ -81,6 +81,20 @@
       ->camelCase
       ok))
 
+(defn get-all-plans-and-linked-review
+  [{{{:keys [caseid planid]} :query} :parameters}]
+  (log/info "get all case plans and linked review" caseid planid)
+  (-> (caseplan/retrieve-all-plans-and-linked-review caseid planid)
+      ->camelCase
+      ok))
+
+(defn get-audit-history
+  [{{{:keys [planid]} :query} :parameters}]
+  (log/info "get case plan audit history" planid)
+  (-> (caseplan/retrieve-audit-history planid)
+      ->camelCase
+      ok))
+
 (defn caseplan-routes []
   ["/caseplan"
    {:coercion spec-coercion/coercion
@@ -147,8 +161,22 @@
     {:get {:parameters {:query {:caseid pos-int?}}
            :handler get-all-plans}}]
 
+   ["/allplansandlinked"
+    {:get {:parameters {:query {:caseid pos-int?
+                                :planid pos-int?}}
+           :handler get-all-plans-and-linked-review}}]
+
+   ["/audithistory"
+    {:get {:parameters {:query {:planid pos-int?}}
+           :handler get-audit-history}}]
+
+   ["/auditdetails"
+    {:get {:parameters {:query {:auditid pos-int?}}
+           :handler get-audit-details}}]
+
    ["/workers"
     {:get {:handler get-workers}}]
 
    ["/offices"
     {:get {:handler get-offices}}]])
+

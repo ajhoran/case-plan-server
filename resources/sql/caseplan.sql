@@ -453,3 +453,20 @@ SELECT PLAN_ID,
        APPROVED_DATETIME
 FROM CASE_PLAN
 WHERE CASE_ID = :case-id
+
+-- :name get-plan-audit-history :? :*
+SELECT AUDIT_ID,
+       TIME_STAMP,
+       USER_ID
+FROM AUDIT_LOG
+WHERE TARGET = 'caseplan'
+AND TARGET_ID = :plan-id
+
+-- :name get-audit-details :? :1
+SELECT JSON
+FROM AUDIT_LOG
+WHERE AUDIT_ID = :audit-id
+
+
+
+

@@ -45,7 +45,10 @@ FROM REV_CLIENT
 WHERE REVIEW_ID = :review-id
 
 -- :name get-rev-details :? :1
-SELECT PANEL_CHAIR,
+SELECT REVIEW_DATE,
+       REVIEW_TIME,
+       REVIEW_VENUE,
+       PANEL_CHAIR,
        PANEL_CHAIR_ROLE,
        PANEL_CHAIR_ROLE_OTHER,
        CHARTER_RECEIVED,
@@ -225,4 +228,9 @@ WHERE REVIEW_ID = :review-id
 -- :name get-rev-rep-placement :? :1
 SELECT PROGRESS_SUMMARY
 FROM REV_REP_PLACEMENT
+WHERE REVIEW_ID = :review-id
+
+-- :name get-rev-rep-life-skills :? :1
+SELECT PROGRESS_SUMMARY
+FROM REV_REP_LIFE_SKILLS
 WHERE REVIEW_ID = :review-id
