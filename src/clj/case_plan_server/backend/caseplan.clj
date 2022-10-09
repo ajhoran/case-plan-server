@@ -67,7 +67,7 @@
 
 (defn- get-related-review
   [plan-id]
-  (let [{:keys [outcomes outcomes-actions actions-panel actions-case-plan] :as review}
+  (let [{:keys [outcomes outcomes-actions outcomes-actions-create actions-panel actions-case-plan] :as review}
         (db/retrieve-plan-related-review plan-id)
         incomplete-outcomes-actions (->> outcomes-actions
                                          (filter #(contains? incomplete-action-statuses (:status %)))
@@ -84,7 +84,7 @@
     (-> review
         (select-keys [:review-id :client])
         (assoc :outcomes incomplete-outcomes
-               :outcomes-actions incomplete-outcomes-actions
+               :outcomes-actions (concat outcomes-actions-create incomplete-outcomes-actions)
                :actions (concat actions-panel incomplete-actions-case-plan)))))
 
 (defn create

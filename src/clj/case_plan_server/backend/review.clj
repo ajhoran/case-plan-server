@@ -61,3 +61,10 @@
         print-request/pull-up
         workflow-request/pull-up
         (db/save-review audit))))
+
+(defn retrieve-all-reviews-and-open-plan
+  [case-id]
+  (let [all-reviews (db/retrieve-all-reviews case-id)
+        open-plan-exists (db/open-plan-exists {:case-id case-id})]
+    {:all-reviews all-reviews
+     :open-plan-exists (:existing open-plan-exists)}))

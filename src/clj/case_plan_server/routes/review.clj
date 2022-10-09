@@ -40,6 +40,13 @@
           ->camelCase
           ok))))
 
+(defn get-all-reviews-and-open-plan
+  [{{{:keys [caseid]} :query} :parameters}]
+  (log/info "get all reviews and open plan" caseid)
+  (-> (review/retrieve-all-reviews-and-open-plan caseid)
+      ->camelCase
+      ok))
+
 (defn save-review
   [{{{:keys [userid caseid clientid id viewOnly token]} :query} :parameters :as request}]
   (log/info "save review" userid caseid clientid id viewOnly token)
@@ -109,6 +116,10 @@
                                  :viewOnly string?
                                  :token string?}}
             :handler save-review}}]
+
+   ["/allreviewsandopenplan"
+    {:get {:parameters {:query {:caseid pos-int?}}
+           :handler get-all-reviews-and-open-plan}}]
 
    ["/workers"
     {:get {:handler get-workers}}]

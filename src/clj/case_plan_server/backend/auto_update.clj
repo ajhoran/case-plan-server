@@ -11,7 +11,7 @@
 
 (defn- is-newly-approved?
   [{:keys [approved-datetime status]}]
-  (and (= "APPROVED" status)
+  (and (or (= "APPROVED" status) (= "FINALISED" status))
        (blank? approved-datetime)))
 
 (defn- update-header

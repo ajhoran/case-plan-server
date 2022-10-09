@@ -91,6 +91,7 @@
    [:rev_contributors :contributors]
    [:rev_outcomes :outcomes]
    [:rev_outcomes_actions :outcomes-actions]
+   [:rev_outcomes_actions_create :outcomes-actions-create]
    [:rev_atsi :acist]
    [:rev_atsi_reconnect :atsi-reconnect]
    [:rev_cald :cald]
@@ -215,6 +216,11 @@
   (->> (select *db* {:case-id case-id} :case_plan get-all-plans-sqlvec)
         (map #(select-keys % [:plan-id :status :approved-datetime]))))
 
+(defn retrieve-all-reviews
+  [case-id]
+  (->> (select *db* {:case-id case-id} :review_report get-all-reviews-sqlvec)
+        (map #(select-keys % [:review-id :status :approved-datetime]))))
+
 (defn retrieve-audit-history
   [plan-id]
   (->> (select *db* {:plan-id plan-id} :audit_log get-plan-audit-history-sqlvec)
@@ -266,6 +272,7 @@
         :client (s1 :rev_client get-rev-client-sqlvec)
         :outcomes (s :rev_outcomes get-rev-outcomes-sqlvec)
         :outcomes-actions (s :rev_outcomes_actions get-rev-outcomes-actions-sqlvec)
+        :outcomes-actions-create (s :rev_outcomes_actions_create get-rev-outcomes-actions-create-sqlvec)
         :actions-panel (s :rev_actions_panel get-rev-actions-panel-sqlvec)
         :actions-case-plan (s :rev_actions_case_plan get-rev-actions-case-plan-sqlvec)))))
 
@@ -295,6 +302,7 @@
         :contributors (s :rev_contributors get-rev-contributors-sqlvec)
         :outcomes (s :rev_outcomes get-rev-outcomes-sqlvec)
         :outcomes-actions (s :rev_outcomes_actions get-rev-outcomes-actions-sqlvec)
+        :outcomes-actions-create (s :rev_outcomes_actions_create get-rev-outcomes-actions-create-sqlvec)
         :acist (s1 :rev_atsi get-rev-atsi-sqlvec)
         :atsi-reconnect (s :rev_atsi_reconnect get-rev-atsi-reconnect-sqlvec)
         :cald (s1 :rev_cald get-rev-cald-sqlvec)

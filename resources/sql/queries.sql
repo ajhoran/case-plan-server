@@ -13,7 +13,7 @@ WHERE CLIENT_ID = :client-id
 SELECT MAX(REVIEW_ID) REVIEW_ID
 FROM REVIEW_REPORT
 WHERE PLAN_ID = :plan-id
-  AND STATUS = 'APPROVED'
+  AND (STATUS = 'APPROVED' OR STATUS = 'FINALISED')
 
 -- :name get-offices :? :*
 SELECT OFFICE,
@@ -110,4 +110,14 @@ SELECT CASE
                THEN 'Y'
            ELSE 'N'
            END AS REVIEWED
+FROM DUAL
+
+-- :name open-plan-exists :? :1
+SELECT CASE
+           WHEN EXISTS (SELECT PLAN_ID
+                        FROM CASE_PLAN
+                        WHERE CASE_ID = :case-id AND STATUS <> 'CANCELLED' AND STATUS <> 'APPROVED')
+               THEN 'Y'
+           ELSE 'N'
+           END AS EXISTING
 FROM DUAL

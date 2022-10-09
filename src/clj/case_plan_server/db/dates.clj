@@ -72,6 +72,7 @@
    :rev_details {:charter_received_date [format-date parse-date]
                  :review_date [format-date parse-date]}
    :rev_outcomes_actions {:planned_when [format-date parse-date]}
+   :rev_outcomes_actions_create {:planned_when [format-date parse-date]}
    :rev_endorsement_approval {:action_datetime [format-datetime parse-datetime]
                               :result_datetime [format-datetime parse-datetime]}
    :rev_actions_case_plan {:planned_when [format-date parse-date]}

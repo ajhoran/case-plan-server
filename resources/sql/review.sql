@@ -111,6 +111,16 @@ SELECT OUTCOME_ORD,
 FROM REV_OUTCOMES_ACTIONS
 WHERE REVIEW_ID = :review-id
 
+-- :name get-rev-outcomes-actions-create :? :*
+SELECT OUTCOME_ORD,
+       ORD,
+       ACTION,
+       WHO,
+       PLANNED_WHEN,
+       MEASURE
+FROM REV_OUTCOMES_ACTIONS_CREATE
+WHERE REVIEW_ID = :review-id
+
 -- :name get-rev-atsi :? :1
 SELECT PROGRESS_SUMMARY
 FROM REV_ATSI
@@ -234,3 +244,10 @@ WHERE REVIEW_ID = :review-id
 SELECT PROGRESS_SUMMARY
 FROM REV_REP_LIFE_SKILLS
 WHERE REVIEW_ID = :review-id
+
+-- :name get-all-reviews :? :*
+SELECT REVIEW_ID,
+       STATUS,
+       APPROVED_DATETIME
+FROM REVIEW_REPORT
+WHERE CASE_ID = :case-id
